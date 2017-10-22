@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$USER_HOME$/Google Drive/UIUC/CS 523 - OS/cs523-iot-ui/IOTUI/IOTUI.iml" filepath="$USER_HOME$/Google Drive/UIUC/CS 523 - OS/cs523-iot-ui/IOTUI/IOTUI.iml" />
+      <module fileurl="file://$USER_HOME$/Google Drive/UIUC/CS 523 - OS/cs523-iot-ui/IOTUI/app/app.iml" filepath="$USER_HOME$/Google Drive/UIUC/CS 523 - OS/cs523-iot-ui/IOTUI/app/app.iml" />
+    </modules>
+  </component>
+</project>
