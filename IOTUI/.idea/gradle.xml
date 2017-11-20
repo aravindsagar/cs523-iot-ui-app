@@ -7,8 +7,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$USER_HOME$/Google Drive/UIUC/CS 523 - OS/cs523-iot-ui/IOTUI" />
-            <option value="$USER_HOME$/Google Drive/UIUC/CS 523 - OS/cs523-iot-ui/IOTUI/app" />
+            <option value="$USER_HOME$/Google Drive/UIUC/CS523_OS/cs523-iot-ui-app/IOTUI" />
+            <option value="$USER_HOME$/Google Drive/UIUC/CS523_OS/cs523-iot-ui-app/IOTUI/app" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
