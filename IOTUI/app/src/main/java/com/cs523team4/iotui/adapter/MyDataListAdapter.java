@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cs523team4.iotui.R;
+import com.cs523team4.iotui.data_model.DeviceData;
 
 /**
  * Adapter used to populate 'My Data' list view.
@@ -37,40 +38,23 @@ public class MyDataListAdapter extends BaseAdapter {
         }
     }
 
-    // Dummy data for now.
-    private static class DataUnit {
-        int drawable;
-        String name, source;
-        boolean shared;
+    private final LayoutInflater myInflater;
+    private DeviceData[] myDeviceData;
 
-        public DataUnit(int drawable, String name, String source, boolean shared) {
-            this.drawable = drawable;
-            this.name = name;
-            this.source = source;
-            this.shared = shared;
-        }
-    }
-    private DataUnit[] myData = new DataUnit[] {
-            new DataUnit(R.drawable.ic_menu_camera, "Living room camera", "Google Drive", true),
-            new DataUnit(R.drawable.ic_location_on_black_24dp, "Phone GPS", "Box", false),
-            new DataUnit(R.drawable.ic_ac_unit_black_24dp, "Home thermostat", "Nest", true),
-    };
-
-    private final LayoutInflater inflater;
-
-    public MyDataListAdapter(final Context context) {
+    public MyDataListAdapter(final Context context, DeviceData[] deviceData) {
         super();
-        inflater = LayoutInflater.from(context);
+        myInflater = LayoutInflater.from(context);
+        myDeviceData = deviceData;
     }
 
     @Override
     public int getCount() {
-        return myData.length;
+        return myDeviceData.length;
     }
 
     @Override
     public Object getItem(int position) {
-        return myData[position];
+        return myDeviceData[position];
     }
 
     @Override
@@ -83,7 +67,7 @@ public class MyDataListAdapter extends BaseAdapter {
         // Create or reuse the layout objects as required.
         ViewHolder holder = null;
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.my_data_list_item, parent, false);
+            convertView = myInflater.inflate(R.layout.list_item_my_data, parent, false);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
@@ -94,11 +78,11 @@ public class MyDataListAdapter extends BaseAdapter {
                     (TextView) convertView.findViewById(R.id.data_store_view),
                     (TextView) convertView.findViewById(R.id.date_range_view));
         }
-        DataUnit data = (DataUnit) getItem(position);
-        holder.imageView.setImageResource(data.drawable);
-        holder.nameView.setText(data.name);
-        holder.sourceView.setText(data.source);
-        if (data.shared) {
+        DeviceData data = (DeviceData) getItem(position);
+        holder.imageView.setImageResource(data.getDrawable());
+        holder.nameView.setText(data.getName());
+        holder.sourceView.setText(data.getSource());
+        if (data.isDataShared()) {
             holder.sharedStatusView.setText(R.string.shared);
         } else {
             holder.sharedStatusView.setText(R.string.not_shared);

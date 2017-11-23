@@ -1,5 +1,6 @@
 package com.cs523team4.iotui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,12 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.cs523team4.iotui.adapter.MyDataListAdapter;
+import com.cs523team4.iotui.data_model.DeviceData;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +48,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         ListView myDataView = (ListView) findViewById(R.id.my_data_list);
-        myDataView.setAdapter(new MyDataListAdapter(this));
+        myDataView.setAdapter(new MyDataListAdapter(this, DeviceData.getDeviceData()));
+        myDataView.setOnItemClickListener(this);
     }
 
     @Override
@@ -103,5 +107,12 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(getApplicationContext(), DeviceDataDetails.class);
+        intent.putExtra(DeviceDataDetails.DEVICE_ID, position);
+        startActivity(intent);
     }
 }
