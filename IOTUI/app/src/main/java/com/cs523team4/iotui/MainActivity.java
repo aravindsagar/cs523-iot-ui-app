@@ -26,6 +26,8 @@ import com.cs523team4.iotui.data_model.DataRequester;
 import com.cs523team4.iotui.data_model.DataSource;
 import com.cs523team4.iotui.data_model.Device;
 import com.cs523team4.iotui.data_model.DeviceDataSummary;
+import com.cs523team4.iotui.intro.IntroActivity;
+import com.cs523team4.iotui.util.PreferenceHelper;
 
 import java.util.Date;
 
@@ -38,6 +40,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!PreferenceHelper.getBoolean(this, R.string.pref_intro_completed, false)) {
+            startActivity(new Intent(this, IntroActivity.class));
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         myDataView = (ListView) findViewById(R.id.my_data_list);
         insertDummyData.execute();
 
-        Snackbar.make(fab, String.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("example_switch", false)), Snackbar.LENGTH_SHORT).show();
+//        Snackbar.make(fab, String.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("example_switch", false)), Snackbar.LENGTH_SHORT).show();
 
     }
 
