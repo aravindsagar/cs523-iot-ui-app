@@ -28,6 +28,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs523team4.iotui.MainActivity" />
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cs523team4.iotui.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

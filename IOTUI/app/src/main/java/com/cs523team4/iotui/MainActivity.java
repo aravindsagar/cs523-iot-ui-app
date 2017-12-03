@@ -1,7 +1,10 @@
 package com.cs523team4.iotui;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -17,10 +20,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.cs523team4.iotui.adapter.MyDataListAdapter;
-import com.cs523team4.iotui.data_model.DeviceData;
+import com.cs523team4.iotui.data_access.AppDatabase;
+import com.cs523team4.iotui.data_model.AccessPermission;
+import com.cs523team4.iotui.data_model.DataRequester;
+import com.cs523team4.iotui.data_model.DataSource;
+import com.cs523team4.iotui.data_model.Device;
+import com.cs523team4.iotui.data_model.DeviceDataSummary;
+
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
+
+    private ListView myDataView;
+    private MyDataListAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +60,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ListView myDataView = (ListView) findViewById(R.id.my_data_list);
-        myDataView.setAdapter(new MyDataListAdapter(this, DeviceData.getDeviceData()));
-        myDataView.setOnItemClickListener(this);
+        myDataView = (ListView) findViewById(R.id.my_data_list);
+        insertDummyData.execute();
+
+        Snackbar.make(fab, String.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("example_switch", false)), Snackbar.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -78,6 +93,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -112,7 +128,62 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(getApplicationContext(), DeviceDataDetails.class);
-        intent.putExtra(DeviceDataDetails.DEVICE_ID, position);
+        intent.putExtra(DeviceDataDetails.DEVICE_ID, ((Device) myAdapter.getItem(position)).deviceId);
         startActivity(intent);
     }
+
+    public AsyncTask<Void, Void, Void> insertDummyData = new AsyncTask<Void, Void, Void>() {
+
+        @Override
+        public Void doInBackground(Void... voids) {
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, AppDatabase.DB_NAME).build();
+            if (db.appDao().loadAllDevices().length > 0) {
+                return null;
+            }
+            DataSource[] dataSources = {new DataSource("Google Drive", "ABC"),
+                                        new DataSource("BOX", "XYZ"),
+                                        new DataSource("Nest", "DEF")};
+            int[] dsIds = new int[dataSources.length];
+            for (int i = 0; i < dataSources.length; i++) {
+                dsIds[i] = (int) db.appDao().insertDataSource(dataSources[i]);
+            }
+            Device[] devices = {
+                    new Device("Living room camera", "Camera", "Home", dsIds[0], "15 GB", R.drawable.ic_menu_camera),
+                    new Device("Phone location", "GPS", "varying", dsIds[1], "120 MB", R.drawable.ic_location_on_black_24dp),
+                    new Device("Home thermostat", "temperature", "home", dsIds[2], "25 MB", R.drawable.ic_ac_unit_black_24dp)
+            };
+            int[] deviceIds = new int[devices.length];
+            for (int i = 0; i < devices.length; i++) {
+                deviceIds[i] = (int) db.appDao().insertDevice(devices[i]);
+            }
+            DataRequester[] requesters = {
+                    new DataRequester("ABR", "Anti-intruder app"),
+                    new DataRequester("BLA", "Google Photos"),
+                    new DataRequester("HAH", "Smarthome app")
+            };
+            int[] requesterIds = new int[requesters.length];
+            for (int i = 0; i < requesters.length; i++) {
+                requesterIds[i] = (int) db.appDao().insertDataRequester(requesters[i]);
+            }
+            DeviceDataSummary[] summaries = {
+                    new DeviceDataSummary(deviceIds[0], "access to realtime data"),
+                    new DeviceDataSummary(deviceIds[0], "full access"),
+                    new DeviceDataSummary(deviceIds[2], "accessto hourly average"),
+            };
+            for (int i = 0; i < summaries.length; i++) {
+                int summaryId = (int) db.appDao().insertDeviceDataSummary(summaries[i]);
+                db.appDao().insertAccessPermission(new AccessPermission(requesterIds[i], summaryId, new Date(), new Date()));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            myAdapter = new MyDataListAdapter(getApplicationContext(),
+                    Room.databaseBuilder(getApplicationContext(), AppDatabase.class, AppDatabase.DB_NAME).build());
+            myDataView.setAdapter(myAdapter);
+            myDataView.setOnItemClickListener(MainActivity.this);
+        }
+    };
 }

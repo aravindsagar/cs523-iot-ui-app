@@ -1,6 +1,9 @@
 package com.cs523team4.iotui.adapter;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cs523team4.iotui.R;
-import com.cs523team4.iotui.data_model.DeviceData;
+import com.cs523team4.iotui.data_access.AppDatabase;
+import com.cs523team4.iotui.data_model.DataSource;
+import com.cs523team4.iotui.data_model.Device;
+import com.cs523team4.iotui.data_model.pojo.AccessPermissionDeviceTuple;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Adapter used to populate 'My Data' list view.
@@ -39,22 +48,46 @@ public class MyDataListAdapter extends BaseAdapter {
     }
 
     private final LayoutInflater myInflater;
-    private DeviceData[] myDeviceData;
+    private Device[] myDevices;
+    private SparseArray<String> myDataSources;
+    private SparseBooleanArray mySharedStatuses;
 
-    public MyDataListAdapter(final Context context, DeviceData[] deviceData) {
+    public MyDataListAdapter(final Context context, AppDatabase db) {
         super();
         myInflater = LayoutInflater.from(context);
-        myDeviceData = deviceData;
+        myDevices = new Device[0];
+        new AsyncTask<AppDatabase, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(AppDatabase... voids) {
+                AppDatabase db = voids[0];
+                myDevices = db.appDao().loadAllDevices();
+                myDataSources = new SparseArray<>(myDevices.length);
+                mySharedStatuses = new SparseBooleanArray(myDevices.length);
+                for (DataSource d : db.appDao().loadAllDataSources()) {
+                    myDataSources.put(d.dataSourceId, d.name);
+                }
+                for (AccessPermissionDeviceTuple t : db.appDao().loadAccessPermissionDeviceTuples()) {
+                    mySharedStatuses.put(t.deviceId, true);
+                };
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                notifyDataSetChanged();
+            }
+        }.execute(db);
     }
 
     @Override
     public int getCount() {
-        return myDeviceData.length;
+        return myDevices.length;
     }
 
     @Override
     public Object getItem(int position) {
-        return myDeviceData[position];
+        return myDevices[position];
     }
 
     @Override
@@ -78,11 +111,11 @@ public class MyDataListAdapter extends BaseAdapter {
                     (TextView) convertView.findViewById(R.id.data_store_view),
                     (TextView) convertView.findViewById(R.id.date_range_view));
         }
-        DeviceData data = (DeviceData) getItem(position);
-        holder.imageView.setImageResource(data.getDrawable());
-        holder.nameView.setText(data.getName());
-        holder.sourceView.setText(data.getSource());
-        if (data.isDataShared()) {
+        Device data = (Device) getItem(position);
+        holder.imageView.setImageResource(data.drawableResId);
+        holder.nameView.setText(data.deviceName);
+        holder.sourceView.setText(myDataSources.get(data.deviceId));
+        if (mySharedStatuses.get(data.deviceId)) {
             holder.sharedStatusView.setText(R.string.shared);
         } else {
             holder.sharedStatusView.setText(R.string.not_shared);
