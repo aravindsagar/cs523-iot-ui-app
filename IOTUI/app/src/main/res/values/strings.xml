@@ -179,5 +179,10 @@
     <string name="welcome">Welcome!</string>
     <string name="log_in_to_continue">Log in to continue</string>
     <string name="password">Password</string>
+    <string name="reject_all">Reject all</string>
+    <string name="accept_all">Accept all</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="notifications">Notifications</string>
+    <string name="logout">Logout</string>
 
 </resources>

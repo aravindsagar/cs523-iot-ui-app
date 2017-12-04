@@ -1,7 +1,7 @@
 package com.cs523team4.iotui.adapter;
 
 import android.content.Context;
-import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -17,8 +17,8 @@ import com.cs523team4.iotui.data_model.DataSource;
 import com.cs523team4.iotui.data_model.Device;
 import com.cs523team4.iotui.data_model.pojo.AccessPermissionDeviceTuple;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Adapter used to populate 'My Data' list view.
@@ -51,33 +51,23 @@ public class MyDataListAdapter extends BaseAdapter {
     private Device[] myDevices;
     private SparseArray<String> myDataSources;
     private SparseBooleanArray mySharedStatuses;
+    private AppDatabase myDb;
+    private Executor myExecutor = Executors.newSingleThreadExecutor();
+    private Handler myHandler;
 
     public MyDataListAdapter(final Context context, AppDatabase db) {
         super();
+        myDb = db;
         myInflater = LayoutInflater.from(context);
         myDevices = new Device[0];
-        new AsyncTask<AppDatabase, Void, Void>() {
+        myDataSources = new SparseArray<>(myDevices.length);
+        mySharedStatuses = new SparseBooleanArray(myDevices.length);
+        myHandler = new Handler();
+        refresh();
+    }
 
-            @Override
-            protected Void doInBackground(AppDatabase... voids) {
-                AppDatabase db = voids[0];
-                myDevices = db.appDao().loadAllDevices();
-                myDataSources = new SparseArray<>(myDevices.length);
-                mySharedStatuses = new SparseBooleanArray(myDevices.length);
-                for (DataSource d : db.appDao().loadAllDataSources()) {
-                    myDataSources.put(d.dataSourceId, d.name);
-                }
-                for (AccessPermissionDeviceTuple t : db.appDao().loadAccessPermissionDeviceTuples()) {
-                    mySharedStatuses.put(t.deviceId, true);
-                };
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                notifyDataSetChanged();
-            }
-        }.execute(db);
+    public void refresh() {
+        myExecutor.execute(populateData);
     }
 
     @Override
@@ -122,4 +112,27 @@ public class MyDataListAdapter extends BaseAdapter {
         }
         return convertView;
     }
+
+    private Runnable notifyDatasetChangedRunnable = new Runnable() {
+        @Override
+        public void run() {
+            notifyDataSetChanged();
+        }
+    };
+
+    private Runnable populateData = new Runnable() {
+        @Override
+        public void run() {
+            myDevices = myDb.appDao().loadAllDevices();
+            myDataSources = new SparseArray<>(myDevices.length);
+            mySharedStatuses = new SparseBooleanArray(myDevices.length);
+            for (DataSource d : myDb.appDao().loadAllDataSources()) {
+                myDataSources.put(d.dataSourceId, d.name);
+            }
+            for (AccessPermissionDeviceTuple t : myDb.appDao().loadAccessPermissionDeviceTuples()) {
+                mySharedStatuses.put(t.deviceId, true);
+            };
+            myHandler.post(notifyDatasetChangedRunnable);
+        }
+    };
 }

@@ -57,4 +57,9 @@ public class PreferenceHelper {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .putString(context.getString(resId), val).apply();
     }
+
+    public static void remove(Context context, int resId) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .remove(context.getString(resId)).apply();
+    }
 }
