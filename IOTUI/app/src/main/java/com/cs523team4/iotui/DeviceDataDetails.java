@@ -108,7 +108,7 @@ public class DeviceDataDetails extends AppCompatActivity {
                             dataUsage = (TextView) findViewById(R.id.view_data_usage);
 
                     dataSource.setText("Stored in " + source.name);
-                    dataUsage.setText("Uses " + data.diskSpaceUsage + " of space");
+                    dataUsage.setText("Uses " + data.diskSpaceUsage + " MB of space");
                     dateRange.setText("From 1/1/2017");
                 }
             });
