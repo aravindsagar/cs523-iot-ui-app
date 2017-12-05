@@ -104,7 +104,7 @@ public class MyDataListAdapter extends BaseAdapter {
         Device data = (Device) getItem(position);
         holder.imageView.setImageResource(data.drawableResId);
         holder.nameView.setText(data.deviceName);
-        holder.sourceView.setText(myDataSources.get(data.deviceId));
+        holder.sourceView.setText(myDataSources.get(data.dataSourceId));
         if (mySharedStatuses.get(data.deviceId)) {
             holder.sharedStatusView.setText(R.string.shared);
         } else {

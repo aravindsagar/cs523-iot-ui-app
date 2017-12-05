@@ -12,12 +12,13 @@ import android.arch.persistence.room.PrimaryKey;
                                   parentColumns = "deviceId",
                                   childColumns = "deviceId"))
 public class DeviceDataSummary {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     public int summaryId;
     public int deviceId;
     public String summaryDescription;
 
-    public DeviceDataSummary(int deviceId, String summaryDescription) {
+    public DeviceDataSummary(int summaryId, int deviceId, String summaryDescription) {
+        this.summaryId = summaryId;
         this.deviceId = deviceId;
         this.summaryDescription = summaryDescription;
     }

@@ -13,4 +13,9 @@ public class TrustedAgent {
     public int trustedAgentId;
 
     public String name;
+
+    public TrustedAgent(int trustedAgentId, String name) {
+        this.trustedAgentId = trustedAgentId;
+        this.name = name;
+    }
 }

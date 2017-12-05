@@ -10,14 +10,15 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity
 public class DataRequester {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     public int dataRequesterId;
 
     public String pubicKey;
     public String name;
     public int drawableResId;
 
-    public DataRequester(String pubicKey, String name, int drawableResId) {
+    public DataRequester(int dataRequesterId, String pubicKey, String name, int drawableResId) {
+        this.dataRequesterId = dataRequesterId;
         this.pubicKey = pubicKey;
         this.name = name;
         this.drawableResId = drawableResId;

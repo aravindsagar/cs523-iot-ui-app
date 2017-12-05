@@ -20,8 +20,14 @@ import com.cs523team4.iotui.data_model.DataRequester;
 import com.cs523team4.iotui.data_model.DeviceDataSummary;
 import com.cs523team4.iotui.data_model.TrustedAgent;
 import com.cs523team4.iotui.data_model.pojo.DeviceNameSummaryIdTuple;
+import com.cs523team4.iotui.server_util.ServerReader;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -140,7 +146,7 @@ public class DataRequestsAdapter extends BaseAdapter {
         }
     };
 
-    public void itemClick(int position, Context context) {
+    public void itemClick(int position, final Context context) {
         final DataRequest request = (DataRequest) getItem(position);
         DataRequester requester = myDataRequesters.get(request.dataRequesterId);
         String message = "Allow " + requester.name
@@ -158,9 +164,13 @@ public class DataRequestsAdapter extends BaseAdapter {
                         myExecutor.execute(new Runnable() {
                             @Override
                             public void run() {
-                                myDb.appDao().insertAccessPermission(request.toAccessPermission());
+                                try {
+                                    ServerReader.postDataRequestAction(context, request, ServerReader.ACTION_ACCEPT);
+                                } catch (KeyManagementException | CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+                                    e.printStackTrace();
+                                }
                                 myDb.appDao().deleteDataRequest(request);
-                                myHandler.post(notifyDatasetChangedRunnable);
+                                populateData.run();
                             }
                         });
                     }
@@ -171,8 +181,13 @@ public class DataRequestsAdapter extends BaseAdapter {
                         myHandler.post(new Runnable() {
                             @Override
                             public void run() {
+                                try {
+                                    ServerReader.postDataRequestAction(context, request, ServerReader.ACTION_DENY);
+                                } catch (KeyManagementException | CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+                                    e.printStackTrace();
+                                }
                                 myDb.appDao().deleteDataRequest(request);
-                                myHandler.post(notifyDatasetChangedRunnable);
+                                populateData.run();
                             }
                         });
                     }

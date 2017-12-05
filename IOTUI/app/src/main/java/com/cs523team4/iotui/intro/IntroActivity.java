@@ -27,6 +27,7 @@ public class IntroActivity extends AppIntro2 {
         // Add your slide fragments here.
         // AppIntro will automatically generate the dots indicator and buttons.
         addSlide(new LogInFragment());
+        addSlide(new FetchingDataFragment());
 
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest.
@@ -66,6 +67,8 @@ public class IntroActivity extends AppIntro2 {
     @Override
     public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
         super.onSlideChanged(oldFragment, newFragment);
-        // Do something when the slide changes.
+        if (newFragment instanceof FetchingDataFragment) {
+            ((FetchingDataFragment) newFragment).startFetching();
+        }
     }
 }

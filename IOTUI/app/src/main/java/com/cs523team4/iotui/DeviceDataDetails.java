@@ -15,10 +15,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cs523team4.iotui.data_access.AppDatabase;
+import com.cs523team4.iotui.data_model.AccessPermission;
 import com.cs523team4.iotui.data_model.DataSource;
 import com.cs523team4.iotui.data_model.Device;
 import com.cs523team4.iotui.data_model.pojo.DataRequesterSummaryDescriptionTuple;
+import com.cs523team4.iotui.server_util.ServerReader;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -119,7 +126,13 @@ public class DeviceDataDetails extends AppCompatActivity {
 
         @Override
         public void run() {
-            db.appDao().deleteAccessPermission(db.appDao().loadAccessPermission(id));
+            AccessPermission permission = db.appDao().loadAccessPermission(id);
+            try {
+                ServerReader.postAccessPermissionAction(DeviceDataDetails.this, permission, ServerReader.ACTION_DENY);
+            } catch (KeyManagementException | CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
+                e.printStackTrace();
+            }
+            db.appDao().deleteAccessPermission(permission);
         }
     }
 

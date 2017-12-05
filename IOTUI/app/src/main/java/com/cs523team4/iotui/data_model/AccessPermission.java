@@ -17,7 +17,7 @@ import java.util.Date;
                                    parentColumns = "summaryId",
                                    childColumns = "summaryId")})
 public class AccessPermission {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     public int accessPermissionId;
 
     public int dataRequesterId;
@@ -25,7 +25,8 @@ public class AccessPermission {
     public Date startDate;
     public Date endDate;
 
-    public AccessPermission(int dataRequesterId, int summaryId, Date startDate, Date endDate) {
+    public AccessPermission(int accessPermissionId, int dataRequesterId, int summaryId, Date startDate, Date endDate) {
+        this.accessPermissionId = accessPermissionId;
         this.dataRequesterId = dataRequesterId;
         this.summaryId = summaryId;
         this.startDate = startDate;

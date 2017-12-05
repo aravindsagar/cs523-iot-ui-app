@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4191383045e2c66b8bbb6a3e07573c0e",
+    "identityHash": "c6c2f9d1238eecadd48b1cc7b5e11ef0",
     "entities": [
       {
         "tableName": "AccessPermission",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accessPermissionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dataRequesterId` INTEGER NOT NULL, `summaryId` INTEGER NOT NULL, `startDate` INTEGER, `endDate` INTEGER, FOREIGN KEY(`dataRequesterId`) REFERENCES `DataRequester`(`dataRequesterId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`summaryId`) REFERENCES `DeviceDataSummary`(`summaryId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accessPermissionId` INTEGER NOT NULL, `dataRequesterId` INTEGER NOT NULL, `summaryId` INTEGER NOT NULL, `startDate` INTEGER, `endDate` INTEGER, PRIMARY KEY(`accessPermissionId`), FOREIGN KEY(`dataRequesterId`) REFERENCES `DataRequester`(`dataRequesterId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`summaryId`) REFERENCES `DeviceDataSummary`(`summaryId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "accessPermissionId",
@@ -43,7 +43,7 @@
           "columnNames": [
             "accessPermissionId"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": [
@@ -118,7 +118,7 @@
       },
       {
         "tableName": "DataRequester",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dataRequesterId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `pubicKey` TEXT, `name` TEXT, `drawableResId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dataRequesterId` INTEGER NOT NULL, `pubicKey` TEXT, `name` TEXT, `drawableResId` INTEGER NOT NULL, PRIMARY KEY(`dataRequesterId`))",
         "fields": [
           {
             "fieldPath": "dataRequesterId",
@@ -149,14 +149,14 @@
           "columnNames": [
             "dataRequesterId"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
       },
       {
         "tableName": "DataSource",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dataSourceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `publicKey` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dataSourceId` INTEGER NOT NULL, `name` TEXT, `publicKey` TEXT, PRIMARY KEY(`dataSourceId`))",
         "fields": [
           {
             "fieldPath": "dataSourceId",
@@ -181,14 +181,14 @@
           "columnNames": [
             "dataSourceId"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
       },
       {
         "tableName": "Device",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceName` TEXT, `type` TEXT, `location` TEXT, `dataSourceId` INTEGER NOT NULL, `diskSpaceUsage` TEXT, `drawableResId` INTEGER NOT NULL, FOREIGN KEY(`dataSourceId`) REFERENCES `DataSource`(`dataSourceId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` INTEGER NOT NULL, `deviceName` TEXT, `type` TEXT, `location` TEXT, `dataSourceId` INTEGER NOT NULL, `diskSpaceUsage` TEXT, `drawableResId` INTEGER NOT NULL, PRIMARY KEY(`deviceId`), FOREIGN KEY(`dataSourceId`) REFERENCES `DataSource`(`dataSourceId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "deviceId",
@@ -237,7 +237,7 @@
           "columnNames": [
             "deviceId"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": [
@@ -256,7 +256,7 @@
       },
       {
         "tableName": "DeviceDataSummary",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`summaryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` INTEGER NOT NULL, `summaryDescription` TEXT, FOREIGN KEY(`deviceId`) REFERENCES `Device`(`deviceId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`summaryId` INTEGER NOT NULL, `deviceId` INTEGER NOT NULL, `summaryDescription` TEXT, PRIMARY KEY(`summaryId`), FOREIGN KEY(`deviceId`) REFERENCES `Device`(`deviceId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "summaryId",
@@ -281,7 +281,7 @@
           "columnNames": [
             "summaryId"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": [
@@ -421,7 +421,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"4191383045e2c66b8bbb6a3e07573c0e\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"c6c2f9d1238eecadd48b1cc7b5e11ef0\")"
     ]
   }
 }

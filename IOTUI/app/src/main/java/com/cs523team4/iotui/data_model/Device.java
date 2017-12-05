@@ -13,7 +13,7 @@ import android.arch.persistence.room.PrimaryKey;
                                   childColumns = "dataSourceId"))
 public class Device {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     public int deviceId;
 
     public String deviceName;
@@ -25,7 +25,8 @@ public class Device {
     // Temporary
     public int drawableResId;
 
-    public Device(String deviceName, String type, String location, int dataSourceId, String diskSpaceUsage, int drawableResId) {
+    public Device(int deviceId, String deviceName, String type, String location, int dataSourceId, String diskSpaceUsage, int drawableResId) {
+        this.deviceId = deviceId;
         this.deviceName = deviceName;
         this.type = type;
         this.location = location;

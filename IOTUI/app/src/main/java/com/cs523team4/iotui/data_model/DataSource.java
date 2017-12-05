@@ -9,13 +9,14 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity
 public class DataSource {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     public int dataSourceId;
 
     public String name;
     public String publicKey;
 
-    public DataSource(String name, String publicKey) {
+    public DataSource(int dataSourceId, String name, String publicKey) {
+        this.dataSourceId = dataSourceId;
         this.name = name;
         this.publicKey = publicKey;
     }

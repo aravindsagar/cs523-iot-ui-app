@@ -19,7 +19,8 @@ public class DataRequest {
     public Date startDate;
     public Date endDate;
 
-    public DataRequest(int dataRequesterId, int summaryId, Date startDate, Date endDate) {
+    public DataRequest(int requestId, int dataRequesterId, int summaryId, Date startDate, Date endDate) {
+        this.requestId = requestId;
         this.dataRequesterId = dataRequesterId;
         this.summaryId = summaryId;
         this.startDate = startDate;
@@ -27,6 +28,6 @@ public class DataRequest {
     }
 
     public AccessPermission toAccessPermission() {
-        return new AccessPermission(dataRequesterId, summaryId, startDate, endDate);
+        return new AccessPermission(requestId, dataRequesterId, summaryId, startDate, endDate);
     }
 }

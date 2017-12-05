@@ -46,11 +46,13 @@ public class LogInFragment extends Fragment implements ISlidePolicy {
         String password = myPasswordView.getText().toString();
 
         // TODO Authenticate using our server.
-        boolean success = !username.isEmpty();
+        boolean success = !username.isEmpty() && !password.isEmpty();
 
         if (success) {
             PreferenceManager.getDefaultSharedPreferences(getContext()).edit()
                     .putString(getString(R.string.pref_key_username), username).apply();
+            PreferenceManager.getDefaultSharedPreferences(getContext()).edit()
+                    .putString(getString(R.string.pref_key_password), password).apply();
         }
 
         return success;

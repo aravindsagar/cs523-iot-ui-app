@@ -3,6 +3,7 @@ package com.cs523team4.iotui.data_access;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import com.cs523team4.iotui.data_model.AccessPermission;
@@ -24,31 +25,31 @@ import com.cs523team4.iotui.data_model.pojo.DeviceNameSummaryIdTuple;
 
 @Dao
 public abstract class AppDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertDevice(Device device);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertDataSource(DataSource dataSource);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertDeviceDataSummary(DeviceDataSummary deviceDataSummary);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertDataRequester(DataRequester dataRequester);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertDataDateRange(DataDateRange dataDateRange);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertAccessPermission(AccessPermission accessPermission);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertDataRequest(DataRequest dataRequest);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertTrustedAgent(TrustedAgent trustedAgent);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insertEndorsement(Endorsement endorsement);
 
     @Query("SELECT * FROM Device")
