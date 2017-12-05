@@ -1,6 +1,7 @@
 package com.cs523team4.iotui.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -119,6 +120,7 @@ public class MyDevicesFragment extends Fragment implements
         startActivity(intent);
     }
 
+    @SuppressLint("StaticFieldLeak")
     public AsyncTask<Void, Void, Void> insertDummyData = new AsyncTask<Void, Void, Void>() {
 
         @Override

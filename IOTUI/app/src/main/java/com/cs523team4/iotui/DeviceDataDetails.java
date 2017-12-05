@@ -1,6 +1,8 @@
 package com.cs523team4.iotui;
 
+import android.app.AlertDialog;
 import android.arch.persistence.room.Room;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -48,7 +50,7 @@ public class DeviceDataDetails extends AppCompatActivity {
     private Runnable loadData = new Runnable() {
         @Override
         public void run() {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, AppDatabase.DB_NAME).build();
+            final AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, AppDatabase.DB_NAME).build();
             final Device data = db.appDao().loadDevice(getIntent().getIntExtra(DEVICE_ID, 0));
             final DataRequesterSummaryDescriptionTuple[] permissions = db.appDao().loadDataRequesterSummaryDescriptionTuples(data.deviceId);
             final DataSource source = db.appDao().loadDataSource(data.dataSourceId);
@@ -62,11 +64,31 @@ public class DeviceDataDetails extends AppCompatActivity {
                     toolbarImg.setImageResource(data.drawableResId);
 
                     LinearLayout sharingDetails = (LinearLayout) findViewById(R.id.list_view_sharing_details);
+                    sharingDetails.removeAllViews();
                     if (permissions.length > 0) {
-                        for (DataRequesterSummaryDescriptionTuple entry : permissions) {
+                        for (final DataRequesterSummaryDescriptionTuple entry : permissions) {
                             TextView item = (TextView) getLayoutInflater().inflate(R.layout.list_item_sharing_details, sharingDetails, false);
                             item.setText(entry.requesterName + " has " + entry.summaryDescription);
                             sharingDetails.addView(item);
+                            item.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View v) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(DeviceDataDetails.this);
+                                    builder.setMessage("Revoke this data access permission?")
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    singleThreadExecutor.execute(
+                                                            new DeletePermission(db, entry.accessPermissionId)
+                                                    );
+                                                    singleThreadExecutor.execute(loadData);
+                                                }
+                                            })
+                                            .setNegativeButton("No", null)
+                                            .show();
+                                    return true;
+                                }
+                            });
                         }
                     } else {
                         TextView item = (TextView) getLayoutInflater().inflate(R.layout.list_item_sharing_details, sharingDetails, false);
@@ -85,4 +107,21 @@ public class DeviceDataDetails extends AppCompatActivity {
             });
         }
     };
+
+    class DeletePermission implements Runnable {
+        AppDatabase db;
+        int id;
+
+        public DeletePermission(AppDatabase db, int id) {
+            this.db = db;
+            this.id = id;
+        }
+
+        @Override
+        public void run() {
+            db.appDao().deleteAccessPermission(db.appDao().loadAccessPermission(id));
+        }
+    }
+
+
 }

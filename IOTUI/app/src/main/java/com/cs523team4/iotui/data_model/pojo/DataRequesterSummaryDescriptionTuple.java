@@ -12,5 +12,6 @@ public class DataRequesterSummaryDescriptionTuple {
     @ColumnInfo(name = "name")
     public String requesterName;
 
+    public int accessPermissionId;
     public String summaryDescription;
 }

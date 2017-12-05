@@ -141,7 +141,7 @@ public class DataRequestsAdapter extends BaseAdapter {
     };
 
     public void itemClick(int position, Context context) {
-        DataRequest request = (DataRequest) getItem(position);
+        final DataRequest request = (DataRequest) getItem(position);
         DataRequester requester = myDataRequesters.get(request.dataRequesterId);
         String message = "Allow " + requester.name
                 + " " + mySummaryDescriptions.get(request.summaryId)
@@ -155,13 +155,26 @@ public class DataRequestsAdapter extends BaseAdapter {
                 .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        myExecutor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                myDb.appDao().insertAccessPermission(request.toAccessPermission());
+                                myDb.appDao().deleteDataRequest(request);
+                                myHandler.post(notifyDatasetChangedRunnable);
+                            }
+                        });
                     }
                 })
                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                myDb.appDao().deleteDataRequest(request);
+                                myHandler.post(notifyDatasetChangedRunnable);
+                            }
+                        });
                     }
                 })
                 .setView(checkBoxView)

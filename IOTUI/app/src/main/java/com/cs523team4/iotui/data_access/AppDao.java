@@ -77,6 +77,9 @@ public abstract class AppDao {
             + "WHERE AccessPermission.summaryId IN (:deviceDataSummaryIds)")
     public abstract AccessPermission[] loadAccessPermissions(int[] deviceDataSummaryIds);
 
+    @Query("SELECT * FROM AccessPermission WHERE accessPermissionId = (:id) LIMIT 1")
+    public abstract AccessPermission loadAccessPermission(int id);
+
     @Query("SELECT AccessPermission.accessPermissionId, DeviceDataSummary.deviceId FROM AccessPermission "
             + "INNER JOIN DeviceDataSummary ON DeviceDataSummary.summaryId = AccessPermission.summaryId")
     public abstract AccessPermissionDeviceTuple[] loadAccessPermissionDeviceTuples();
@@ -87,7 +90,7 @@ public abstract class AppDao {
     @Query("SELECT * FROM DataRequester")
     public abstract DataRequester[] loadAllDataRequesters();
 
-    @Query("SELECT DataRequester.name, DeviceDataSummary.summaryDescription FROM AccessPermission "
+    @Query("SELECT DataRequester.name, DeviceDataSummary.summaryDescription, AccessPermission.accessPermissionId FROM AccessPermission "
             + "INNER JOIN DeviceDataSummary ON AccessPermission.summaryId = DeviceDataSummary.summaryId "
             + "INNER JOIN DataRequester ON AccessPermission.dataRequesterId = DataRequester.dataRequesterId "
             + "WHERE DeviceDataSummary.deviceId = (:deviceId)")
@@ -109,6 +112,9 @@ public abstract class AppDao {
 
     @Delete
     public abstract int deleteDataRequest(DataRequest request);
+
+    @Delete
+    public abstract int deleteAccessPermission(AccessPermission permission);
 
     /*@Query("SELECT DataRequester.name, DeviceDataSummary.summaryDescription FROM DataRequest "
             + "INNER JOIN DeviceDataSummary ON DataRequest.summaryId = DeviceDataSummary.summaryId "
