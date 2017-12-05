@@ -12,6 +12,8 @@ import com.cs523team4.iotui.data_model.DataRequester;
 import com.cs523team4.iotui.data_model.DataSource;
 import com.cs523team4.iotui.data_model.Device;
 import com.cs523team4.iotui.data_model.DeviceDataSummary;
+import com.cs523team4.iotui.data_model.Endorsement;
+import com.cs523team4.iotui.data_model.TrustedAgent;
 import com.cs523team4.iotui.data_model.pojo.AccessPermissionDeviceTuple;
 import com.cs523team4.iotui.data_model.pojo.DataRequesterSummaryDescriptionTuple;
 import com.cs523team4.iotui.data_model.pojo.DeviceNameSummaryIdTuple;
@@ -42,6 +44,12 @@ public abstract class AppDao {
 
     @Insert
     public abstract long insertDataRequest(DataRequest dataRequest);
+
+    @Insert
+    public abstract long insertTrustedAgent(TrustedAgent trustedAgent);
+
+    @Insert
+    public abstract void insertEndorsement(Endorsement endorsement);
 
     @Query("SELECT * FROM Device")
     public abstract Device[] loadAllDevices();
@@ -91,6 +99,13 @@ public abstract class AppDao {
     @Query("SELECT Device.deviceName, DeviceDataSummary.summaryId FROM DeviceDataSummary "
             + "INNER JOIN Device ON Device.deviceId = DeviceDataSummary.deviceId")
     public abstract DeviceNameSummaryIdTuple[] loadDeviceNameSummaryIdTuples();
+
+    /**
+     * Returns all trusted agents who endorse the given data requester.
+     */
+    @Query("SELECT * FROM TrustedAgent WHERE trustedAgentId IN " +
+            "(SELECT trustedAgentId FROM Endorsement WHERE dataRequesterId = (:dataRequesterId))")
+    public abstract TrustedAgent[] loadEndorsers(int dataRequesterId);
 
     @Delete
     public abstract int deleteDataRequest(DataRequest request);

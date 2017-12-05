@@ -11,13 +11,16 @@ import com.cs523team4.iotui.data_model.DataRequester;
 import com.cs523team4.iotui.data_model.DataSource;
 import com.cs523team4.iotui.data_model.Device;
 import com.cs523team4.iotui.data_model.DeviceDataSummary;
+import com.cs523team4.iotui.data_model.Endorsement;
+import com.cs523team4.iotui.data_model.TrustedAgent;
 
 /**
  * Created by aravind on 12/2/17.
  */
 
 @Database(entities = {AccessPermission.class, DataDateRange.class, DataRequester.class,
-                      DataSource.class, Device.class, DeviceDataSummary.class, DataRequest.class},
+                      DataSource.class, Device.class, DeviceDataSummary.class, DataRequest.class,
+                      TrustedAgent.class, Endorsement.class},
           version = 1)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {

@@ -18,8 +18,10 @@ import com.cs523team4.iotui.data_access.AppDatabase;
 import com.cs523team4.iotui.data_model.DataRequest;
 import com.cs523team4.iotui.data_model.DataRequester;
 import com.cs523team4.iotui.data_model.DeviceDataSummary;
+import com.cs523team4.iotui.data_model.TrustedAgent;
 import com.cs523team4.iotui.data_model.pojo.DeviceNameSummaryIdTuple;
 
+import java.security.KeyStore;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -33,6 +35,7 @@ public class DataRequestsAdapter extends BaseAdapter {
     private SparseArray<DataRequester> myDataRequesters;
     private SparseArray<String> mySummaryDescriptions;
     private SparseArray<String> mySummaryDeviceNames;
+    private SparseArray<String> myEndorsements;
 
     private Executor myExecutor = Executors.newSingleThreadExecutor();
     private Handler myHandler;
@@ -44,6 +47,7 @@ public class DataRequestsAdapter extends BaseAdapter {
         myDataRequesters = new SparseArray<>();
         mySummaryDescriptions = new SparseArray<>();
         mySummaryDeviceNames = new SparseArray<>();
+        myEndorsements = new SparseArray<>();
         myHandler = new Handler();
         refresh();
     }
@@ -82,7 +86,14 @@ public class DataRequestsAdapter extends BaseAdapter {
                 + mySummaryDeviceNames.get(request.summaryId)
         );
         TextView eView = convertView.findViewById(R.id.text_endorsement);
-        eView.setText("Endorsed by " + requester.endorsements);
+        String endorsements = myEndorsements.get(requester.dataRequesterId);
+        if (endorsements != null) {
+            eView.setText("Endorsed by " + endorsements);
+            eView.setCompoundDrawables(parent.getContext().getResources().getDrawable(R.drawable.ic_tick), null, null, null);
+        } else {
+            eView.setText("No endorsements");
+            eView.setCompoundDrawables(parent.getContext().getResources().getDrawable(R.drawable.ic_warning), null, null, null);
+        }
         ImageView imgView = convertView.findViewById(R.id.img_requester_icon);
         imgView.setImageResource(requester.drawableResId);
         return convertView;
@@ -101,13 +112,28 @@ public class DataRequestsAdapter extends BaseAdapter {
             myDataRequests = myDb.appDao().loadAllDataRequests();
             myDataRequesters.clear();
             mySummaryDescriptions.clear();
-            for(DataRequester r : myDb.appDao().loadAllDataRequesters()) {
+            mySummaryDescriptions.clear();
+            myEndorsements.clear();
+            for (DataRequester r : myDb.appDao().loadAllDataRequesters()) {
                 myDataRequesters.put(r.dataRequesterId, r);
+                String endorsements = null;
+                TrustedAgent[] agents = myDb.appDao().loadEndorsers(r.dataRequesterId);
+                if (agents.length > 0) {
+                    StringBuilder eNames = new StringBuilder();
+                    for (int i = 0; i < agents.length; i++) {
+                        eNames.append(agents[i].name);
+                        if (i < agents.length-1) {
+                            eNames.append(", ");
+                        }
+                    }
+                    endorsements = eNames.toString();
+                }
+                myEndorsements.put(r.dataRequesterId, endorsements);
             }
-            for(DeviceDataSummary s : myDb.appDao().loadAllDeviceDataSummaries()) {
+            for (DeviceDataSummary s : myDb.appDao().loadAllDeviceDataSummaries()) {
                 mySummaryDescriptions.put(s.summaryId, s.summaryDescription);
             }
-            for(DeviceNameSummaryIdTuple t : myDb.appDao().loadDeviceNameSummaryIdTuples()) {
+            for (DeviceNameSummaryIdTuple t : myDb.appDao().loadDeviceNameSummaryIdTuples()) {
                 mySummaryDeviceNames.put(t.summaryId, t.deviceName);
             }
             myHandler.post(notifyDatasetChangedRunnable);

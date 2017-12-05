@@ -144,9 +144,9 @@ public class MyDevicesFragment extends Fragment implements
                 deviceIds[i] = (int) db.appDao().insertDevice(devices[i]);
             }
             DataRequester[] requesters = {
-                    new DataRequester("ABR", "Anti-intruder app", "no one", R.drawable.ic_cloud),
-                    new DataRequester("BLA", "Google Photos", "everyone", R.drawable.ic_menu_slideshow),
-                    new DataRequester("HAH", "Smarthome app", "someone", R.drawable.ic_menu_camera)
+                    new DataRequester("ABR", "Anti-intruder app", R.drawable.ic_cloud),
+                    new DataRequester("BLA", "Google Photos", R.drawable.ic_menu_slideshow),
+                    new DataRequester("HAH", "Smarthome app", R.drawable.ic_menu_camera)
             };
             int[] requesterIds = new int[requesters.length];
             for (int i = 0; i < requesters.length; i++) {

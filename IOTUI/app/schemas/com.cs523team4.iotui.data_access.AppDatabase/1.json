@@ -1,0 +1,427 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "4191383045e2c66b8bbb6a3e07573c0e",
+    "entities": [
+      {
+        "tableName": "AccessPermission",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accessPermissionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dataRequesterId` INTEGER NOT NULL, `summaryId` INTEGER NOT NULL, `startDate` INTEGER, `endDate` INTEGER, FOREIGN KEY(`dataRequesterId`) REFERENCES `DataRequester`(`dataRequesterId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`summaryId`) REFERENCES `DeviceDataSummary`(`summaryId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "accessPermissionId",
+            "columnName": "accessPermissionId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataRequesterId",
+            "columnName": "dataRequesterId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "summaryId",
+            "columnName": "summaryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "startDate",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "endDate",
+            "columnName": "endDate",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "accessPermissionId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "DataRequester",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "dataRequesterId"
+            ],
+            "referencedColumns": [
+              "dataRequesterId"
+            ]
+          },
+          {
+            "table": "DeviceDataSummary",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "summaryId"
+            ],
+            "referencedColumns": [
+              "summaryId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "DataDateRange",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` INTEGER NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER, PRIMARY KEY(`deviceId`, `startDate`), FOREIGN KEY(`deviceId`) REFERENCES `Device`(`deviceId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "startDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endDate",
+            "columnName": "endDate",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "deviceId",
+            "startDate"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "Device",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId"
+            ],
+            "referencedColumns": [
+              "deviceId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "DataRequester",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dataRequesterId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `pubicKey` TEXT, `name` TEXT, `drawableResId` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "dataRequesterId",
+            "columnName": "dataRequesterId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pubicKey",
+            "columnName": "pubicKey",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "drawableResId",
+            "columnName": "drawableResId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "dataRequesterId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DataSource",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dataSourceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `publicKey` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "dataSourceId",
+            "columnName": "dataSourceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "publicKey",
+            "columnName": "publicKey",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "dataSourceId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Device",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceName` TEXT, `type` TEXT, `location` TEXT, `dataSourceId` INTEGER NOT NULL, `diskSpaceUsage` TEXT, `drawableResId` INTEGER NOT NULL, FOREIGN KEY(`dataSourceId`) REFERENCES `DataSource`(`dataSourceId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceName",
+            "columnName": "deviceName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dataSourceId",
+            "columnName": "dataSourceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "diskSpaceUsage",
+            "columnName": "diskSpaceUsage",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "drawableResId",
+            "columnName": "drawableResId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "deviceId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "DataSource",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "dataSourceId"
+            ],
+            "referencedColumns": [
+              "dataSourceId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "DeviceDataSummary",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`summaryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `deviceId` INTEGER NOT NULL, `summaryDescription` TEXT, FOREIGN KEY(`deviceId`) REFERENCES `Device`(`deviceId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "summaryId",
+            "columnName": "summaryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "summaryDescription",
+            "columnName": "summaryDescription",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "summaryId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "Device",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deviceId"
+            ],
+            "referencedColumns": [
+              "deviceId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "DataRequest",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`requestId` INTEGER NOT NULL, `dataRequesterId` INTEGER NOT NULL, `summaryId` INTEGER NOT NULL, `startDate` INTEGER, `endDate` INTEGER, PRIMARY KEY(`requestId`))",
+        "fields": [
+          {
+            "fieldPath": "requestId",
+            "columnName": "requestId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataRequesterId",
+            "columnName": "dataRequesterId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "summaryId",
+            "columnName": "summaryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startDate",
+            "columnName": "startDate",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "endDate",
+            "columnName": "endDate",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "requestId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TrustedAgent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trustedAgentId` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`trustedAgentId`))",
+        "fields": [
+          {
+            "fieldPath": "trustedAgentId",
+            "columnName": "trustedAgentId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "trustedAgentId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Endorsement",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trustedAgentId` INTEGER NOT NULL, `dataRequesterId` INTEGER NOT NULL, PRIMARY KEY(`dataRequesterId`, `trustedAgentId`), FOREIGN KEY(`dataRequesterId`) REFERENCES `DataRequester`(`dataRequesterId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`trustedAgentId`) REFERENCES `TrustedAgent`(`trustedAgentId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "trustedAgentId",
+            "columnName": "trustedAgentId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataRequesterId",
+            "columnName": "dataRequesterId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "dataRequesterId",
+            "trustedAgentId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "DataRequester",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "dataRequesterId"
+            ],
+            "referencedColumns": [
+              "dataRequesterId"
+            ]
+          },
+          {
+            "table": "TrustedAgent",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "trustedAgentId"
+            ],
+            "referencedColumns": [
+              "trustedAgentId"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"4191383045e2c66b8bbb6a3e07573c0e\")"
+    ]
+  }
+}

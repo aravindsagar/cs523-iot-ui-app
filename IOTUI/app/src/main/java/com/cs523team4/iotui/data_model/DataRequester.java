@@ -15,13 +15,11 @@ public class DataRequester {
 
     public String pubicKey;
     public String name;
-    public String endorsements;
     public int drawableResId;
 
-    public DataRequester(String pubicKey, String name, String endorsements, int drawableResId) {
+    public DataRequester(String pubicKey, String name, int drawableResId) {
         this.pubicKey = pubicKey;
         this.name = name;
-        this.endorsements = endorsements;
         this.drawableResId = drawableResId;
     }
 

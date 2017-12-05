@@ -4,6 +4,12 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -35,8 +41,9 @@ public class ServerPullService extends IntentService {
     private void handleRefreshData() {
         // TODO: Fetch data from server and update our db.
         try {
+            ServerReader.readServerData(this);
             Thread.sleep(1000);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException | NoSuchAlgorithmException | CertificateException | KeyManagementException | KeyStoreException e) {
             e.printStackTrace();
         }
         reportResult(true);

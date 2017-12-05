@@ -5,10 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,9 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.cs523team4.iotui.adapter.DataRequestsAdapter;
-import com.cs523team4.iotui.data_access.AppDao_Impl;
 import com.cs523team4.iotui.data_access.AppDatabase;
-import com.cs523team4.iotui.data_model.DataRequest;
 import com.cs523team4.iotui.server_util.ServerPullService;
 import com.github.clans.fab.FloatingActionMenu;
 

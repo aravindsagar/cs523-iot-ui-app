@@ -26,6 +26,7 @@
             android:id="@+id/text_endorsement"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="11sp"/>
+            android:textSize="11sp"
+            android:drawableStart="@drawable/ic_tick"/>
     </LinearLayout>
 </LinearLayout>
