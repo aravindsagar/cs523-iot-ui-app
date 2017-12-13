@@ -59,8 +59,8 @@ public class ServerReader {
     public static final String ACTION_ACCEPT = "accept";
     public static final String ACTION_DENY = "deny";
 
-    private static final String NOTIFY_URL = "https://35.167.25.135:5000/notify";
-    private static final String ACTIONS_URL = "https://35.167.25.135:5000/actions";
+    private static final String NOTIFY_URL = "https://35.167.25.135/notify";
+    private static final String ACTIONS_URL = "https://35.167.25.135/actions";
 
     private static final HashMap<String, Integer> dMap = new HashMap<>();
 
