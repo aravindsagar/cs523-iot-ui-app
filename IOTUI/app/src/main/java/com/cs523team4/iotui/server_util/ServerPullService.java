@@ -4,6 +4,8 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -39,14 +41,13 @@ public class ServerPullService extends IntentService {
      * Handle action refresh data in the provided background thread.
      */
     private void handleRefreshData() {
-        // TODO: Fetch data from server and update our db.
         try {
             ServerReader.readServerData(this);
-            Thread.sleep(1000);
-        } catch (InterruptedException | IOException | NoSuchAlgorithmException | CertificateException | KeyManagementException | KeyStoreException e) {
+            reportResult(true);
+        } catch (JSONException | IOException | NoSuchAlgorithmException | CertificateException | KeyManagementException | KeyStoreException e) {
             e.printStackTrace();
+            reportResult(false);
         }
-        reportResult(true);
     }
 
     /**

@@ -69,16 +69,6 @@ public class ServerReader {
         // Load CAs from an InputStream
         // (could be from a resource or ByteArrayInputStream or ...)
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
-        // My CRT file that I put in the assets folder
-        // I got this file by following these steps:
-        // * Go to https://littlesvr.ca using Firefox
-        // * Click the padlock/More/Security/View Certificate/Details/Export
-        // * Saved the file as littlesvr.crt (type X.509 Certificate (PEM))
-        // The MainActivity.context is declared as:
-        // public static Context context;
-        // And initialized in MainActivity.onCreate() as:
-        // MainActivity.context = getApplicationContext();
         InputStream caInput = new BufferedInputStream(c.getAssets().open("CS523_iot_server.crt"));
         Certificate ca = cf.generateCertificate(caInput);
         Log.d("ServerReader", "ca=" + ((X509Certificate) ca).getSubjectDN());
@@ -117,7 +107,7 @@ public class ServerReader {
         return urlConnection;
     }
 
-    public static void readServerData(Context c) throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    public static void readServerData(Context c) throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, JSONException {
         HttpsURLConnection urlConnection = getUrlConnection(c, NOTIFY_URL);
 
         DataOutputStream outputStream = new DataOutputStream(urlConnection.getOutputStream());
@@ -172,87 +162,83 @@ public class ServerReader {
         Log.d("ServerReader", data);
     }
 
-    private static void parseAndStore(String data, Context context) {
+    private static void parseAndStore(String data, Context context) throws JSONException {
         dMap.clear();
         dMap.put("Camera", R.drawable.ic_menu_camera);
         dMap.put("GPS", R.drawable.ic_location_on_black_24dp);
         dMap.put("temperature", R.drawable.ic_ac_unit_black_24dp);
         AppDatabase db = Room.databaseBuilder(context, AppDatabase.class, DB_NAME).build();
-        try {
-            JSONObject jObject = new JSONObject(data);
+        JSONObject jObject = new JSONObject(data);
 
-            // Insert data sources.
-            JSONArray dataSources = jObject.getJSONArray("data source");
-            for (int i = 0; i < dataSources.length(); i++) {
-                JSONObject source = dataSources.getJSONObject(i);
-                db.appDao().insertDataSource(new DataSource(source.getInt("src_ID"), source.getString("name"), "ABCD"));
-            }
+        // Insert data sources.
+        JSONArray dataSources = jObject.getJSONArray("dataSource");
+        for (int i = 0; i < dataSources.length(); i++) {
+            JSONObject source = dataSources.getJSONObject(i);
+            db.appDao().insertDataSource(new DataSource(source.getInt("srcID"), source.getString("name"), "ABCD"));
+        }
 
-            // Insert data requesters.
-            JSONArray requesters = jObject.getJSONArray("requester");
-            for (int i = 0; i < requesters.length(); i++) {
-                JSONObject r = requesters.getJSONObject(i);
-                db.appDao().insertDataRequester(new DataRequester(
-                        r.getInt("ID"),
-                        r.getString("public key"),
-                        r.getString("name"),
-                        R.drawable.ic_cloud
-                ));
-            }
+        // Insert data requesters.
+        JSONArray requesters = jObject.getJSONArray("requester");
+        for (int i = 0; i < requesters.length(); i++) {
+            JSONObject r = requesters.getJSONObject(i);
+            db.appDao().insertDataRequester(new DataRequester(
+                    r.getInt("ID"),
+                    r.getString("publicKey"),
+                    r.getString("name"),
+                    R.drawable.ic_cloud
+            ));
+        }
 
-            // Insert devices.
-            JSONArray devices = jObject.getJSONArray("device");
-            for (int i = 0; i < devices.length(); i++) {
-                JSONObject device = devices.getJSONObject(i);
-                db.appDao().insertDevice(new Device(
-                        device.getInt("ID"),
-                        device.getString("name"),
-                        device.getString("type"),
-                        device.getString("location"),
-                        device.getInt("src_ID"),
-                        device.getString("data size"),
-                        dMap.get(device.getString("type"))
-                ));
-            }
+        // Insert devices.
+        JSONArray devices = jObject.getJSONArray("device");
+        for (int i = 0; i < devices.length(); i++) {
+            JSONObject device = devices.getJSONObject(i);
+            db.appDao().insertDevice(new Device(
+                    device.getInt("ID"),
+                    device.getString("name"),
+                    device.getString("type"),
+                    device.getString("location"),
+                    device.getInt("srcID"),
+                    device.getString("dataSize"),
+                    dMap.get(device.getString("type"))
+            ));
+        }
 
-            // Insert device summaries.
-            JSONArray summaries = jObject.getJSONArray("deviceSummary");
-            for (int i = 0; i < summaries.length(); i++) {
-                JSONObject s = summaries.getJSONObject(i);
-                db.appDao().insertDeviceDataSummary(new DeviceDataSummary(
-                        s.getInt("ID"),
-                        s.getInt("device ID"),
-                        s.getString("access duration")
-                ));
-            }
+        // Insert device summaries.
+        JSONArray summaries = jObject.getJSONArray("deviceSummary");
+        for (int i = 0; i < summaries.length(); i++) {
+            JSONObject s = summaries.getJSONObject(i);
+            db.appDao().insertDeviceDataSummary(new DeviceDataSummary(
+                    s.getInt("ID"),
+                    s.getInt("deviceID"),
+                    s.getString("accessDuration")
+            ));
+        }
 
-            // Insert access permissions.
-            JSONArray permissions = jObject.getJSONArray("grantedDataRequest");
-            for (int i = 0; i < permissions.length(); i++) {
-                JSONObject p = permissions.getJSONObject(i);
-                db.appDao().insertAccessPermission(new AccessPermission(
-                        p.getInt("ID"),
-                        p.getInt("requester ID"),
-                        p.getInt("deviceSummary ID"),
-                        new Date(),
-                        new Date()
-                ));
-            }
+        // Insert access permissions.
+        JSONArray permissions = jObject.getJSONArray("grantedDataRequest");
+        for (int i = 0; i < permissions.length(); i++) {
+            JSONObject p = permissions.getJSONObject(i);
+            db.appDao().insertAccessPermission(new AccessPermission(
+                    p.getInt("ID"),
+                    p.getInt("requesterID"),
+                    p.getInt("deviceSummaryID"),
+                    new Date(),
+                    new Date()
+            ));
+        }
 
-            // Insert requests.
-            JSONArray requests = jObject.getJSONArray("pendingDataRequest");
-            for (int i = 0; i < requests.length(); i++) {
-                JSONObject p = requests.getJSONObject(i);
-                db.appDao().insertDataRequest(new DataRequest(
-                        p.getInt("ID"),
-                        p.getInt("requester ID"),
-                        p.getInt("deviceSummary ID"),
-                        new Date(),
-                        new Date()
-                ));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        // Insert requests.
+        JSONArray requests = jObject.getJSONArray("pendingDataRequest");
+        for (int i = 0; i < requests.length(); i++) {
+            JSONObject p = requests.getJSONObject(i);
+            db.appDao().insertDataRequest(new DataRequest(
+                    p.getInt("ID"),
+                    p.getInt("requesterID"),
+                    p.getInt("deviceSummaryID"),
+                    new Date(),
+                    new Date()
+            ));
         }
 
     }

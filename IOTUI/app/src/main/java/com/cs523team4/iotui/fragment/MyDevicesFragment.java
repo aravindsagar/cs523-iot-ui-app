@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -38,6 +40,7 @@ import java.util.Date;
 
 import static com.cs523team4.iotui.server_util.ServerPullService.ACTION_REFRESH_DATA;
 import static com.cs523team4.iotui.server_util.ServerPullService.BROADCAST_ACTION;
+import static com.cs523team4.iotui.server_util.ServerPullService.DATA_REFRESH_RESULT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,6 +54,11 @@ public class MyDevicesFragment extends Fragment implements
     private BroadcastReceiver myBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (intent.getBooleanExtra(DATA_REFRESH_RESULT, false)) {
+                Snackbar.make(myRefreshLayout, "Refresh complete", BaseTransientBottomBar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(myRefreshLayout, "Error fetching data from server", BaseTransientBottomBar.LENGTH_SHORT).show();
+            }
             myAdapter.refresh();
             myRefreshLayout.setRefreshing(false);
         }

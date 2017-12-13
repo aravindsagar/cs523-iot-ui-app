@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -22,6 +23,7 @@ import com.github.paolorotolo.appintro.ISlidePolicy;
 import static android.content.Context.SHORTCUT_SERVICE;
 import static com.cs523team4.iotui.server_util.ServerPullService.ACTION_REFRESH_DATA;
 import static com.cs523team4.iotui.server_util.ServerPullService.BROADCAST_ACTION;
+import static com.cs523team4.iotui.server_util.ServerPullService.DATA_REFRESH_RESULT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,7 +36,12 @@ public class FetchingDataFragment extends Fragment implements ISlidePolicy {
     private BroadcastReceiver myBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            messageText.setText("Refresh complete!");
+            if (intent.getBooleanExtra(DATA_REFRESH_RESULT, false)) {
+                messageText.setText("Refresh complete!");
+            } else {
+                messageText.setText("Refresh failed. Will try again later.");
+            }
+
             progressBar.setVisibility(View.GONE);
         }
     };

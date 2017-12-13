@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +24,7 @@ import com.github.clans.fab.FloatingActionMenu;
 
 import static com.cs523team4.iotui.server_util.ServerPullService.ACTION_REFRESH_DATA;
 import static com.cs523team4.iotui.server_util.ServerPullService.BROADCAST_ACTION;
+import static com.cs523team4.iotui.server_util.ServerPullService.DATA_REFRESH_RESULT;
 
 public class DataRequestsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -31,6 +34,11 @@ public class DataRequestsActivity extends AppCompatActivity implements AdapterVi
     private BroadcastReceiver myBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (intent.getBooleanExtra(DATA_REFRESH_RESULT, false)) {
+                Snackbar.make(myRefreshLayout, "Refresh complete", BaseTransientBottomBar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(myRefreshLayout, "Error fetching data from server", BaseTransientBottomBar.LENGTH_SHORT).show();
+            }
             myDataRequestsAdapter.refresh();
             myRefreshLayout.setRefreshing(false);
         }
