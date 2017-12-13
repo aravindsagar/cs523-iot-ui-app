@@ -1,13 +1,10 @@
 package com.cs523team4.iotui.fragment;
 
 
-import android.annotation.SuppressLint;
-import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
@@ -23,20 +20,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.cs523team4.iotui.DeviceDataDetails;
 import com.cs523team4.iotui.R;
 import com.cs523team4.iotui.adapter.MyDataListAdapter;
+import com.cs523team4.iotui.adapter.RefreshCompleteListener;
 import com.cs523team4.iotui.data_access.AppDatabase;
-import com.cs523team4.iotui.data_model.AccessPermission;
-import com.cs523team4.iotui.data_model.DataRequest;
-import com.cs523team4.iotui.data_model.DataRequester;
-import com.cs523team4.iotui.data_model.DataSource;
 import com.cs523team4.iotui.data_model.Device;
-import com.cs523team4.iotui.data_model.DeviceDataSummary;
 import com.cs523team4.iotui.server_util.ServerPullService;
-
-import java.util.Date;
 
 import static com.cs523team4.iotui.server_util.ServerPullService.ACTION_REFRESH_DATA;
 import static com.cs523team4.iotui.server_util.ServerPullService.BROADCAST_ACTION;
@@ -46,9 +38,10 @@ import static com.cs523team4.iotui.server_util.ServerPullService.DATA_REFRESH_RE
  * A simple {@link Fragment} subclass.
  */
 public class MyDevicesFragment extends Fragment implements
-        AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+        AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, RefreshCompleteListener {
 
     private ListView myDataView;
+    private TextView myNoDevicesView;
     private SwipeRefreshLayout myRefreshLayout;
     private MyDataListAdapter myAdapter;
     private BroadcastReceiver myBroadcastReceiver = new BroadcastReceiver() {
@@ -81,9 +74,9 @@ public class MyDevicesFragment extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_my_devices, container, false);
-        myDataView = (ListView) root.findViewById(R.id.my_data_list);
-        myAdapter = new MyDataListAdapter(getContext(),
-                Room.databaseBuilder(getContext(), AppDatabase.class, AppDatabase.DB_NAME).build());
+        myDataView = root.findViewById(R.id.my_data_list);
+        myNoDevicesView = root.findViewById(R.id.text_no_items);
+        myAdapter = new MyDataListAdapter(getContext(), AppDatabase.getInstance(getContext()), this);
         myDataView.setAdapter(myAdapter);
         myDataView.setOnItemClickListener(MyDevicesFragment.this);
 
@@ -148,5 +141,16 @@ public class MyDevicesFragment extends Fragment implements
 
     private void unregisterBroadcastListener() {
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(myBroadcastReceiver);
+    }
+
+    @Override
+    public void onRefreshComplete(boolean success) {
+        if (success) {
+            myDataView.setVisibility(View.VISIBLE);
+            myNoDevicesView.setVisibility(View.GONE);
+        } else {
+            myDataView.setVisibility(View.GONE);
+            myNoDevicesView.setVisibility(View.VISIBLE);
+        }
     }
 }

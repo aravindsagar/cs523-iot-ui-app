@@ -1,5 +1,6 @@
 package com.cs523team4.iotui.server_util;
 
+import android.annotation.SuppressLint;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.util.Log;
@@ -13,6 +14,7 @@ import com.cs523team4.iotui.data_model.DataRequester;
 import com.cs523team4.iotui.data_model.DataSource;
 import com.cs523team4.iotui.data_model.Device;
 import com.cs523team4.iotui.data_model.DeviceDataSummary;
+import com.cs523team4.iotui.util.PreferenceHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -38,6 +41,9 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -52,6 +58,7 @@ import javax.net.ssl.X509TrustManager;
 import static com.cs523team4.iotui.data_access.AppDatabase.DB_NAME;
 
 /**
+ * Helper class to read data from the server and store it in our databases.
  * Created by aravind on 12/4/17.
  */
 
@@ -61,6 +68,9 @@ public class ServerReader {
 
     private static final String NOTIFY_URL = "https://35.167.25.135/notify";
     private static final String ACTIONS_URL = "https://35.167.25.135/actions";
+
+    @SuppressLint("SimpleDateFormat")
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("m/d/y");
 
     private static final HashMap<String, Integer> dMap = new HashMap<>();
 
@@ -107,11 +117,14 @@ public class ServerReader {
         return urlConnection;
     }
 
-    public static void readServerData(Context c) throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, JSONException {
+    public static void readServerData(Context c) throws IOException, CertificateException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, JSONException, ParseException {
         HttpsURLConnection urlConnection = getUrlConnection(c, NOTIFY_URL);
 
         DataOutputStream outputStream = new DataOutputStream(urlConnection.getOutputStream());
-        String jsonParamsString = "{\"username\":\"Aravind\", \"password\":\"Sagar\"}";
+        String jsonParamsString = new JSONObject()
+                .put("username", PreferenceHelper.getString(c, R.string.pref_key_username, ""))
+                .put("password", PreferenceHelper.getString(c, R.string.pref_key_password, ""))
+                .toString();
         outputStream.writeBytes(jsonParamsString);
         outputStream.flush();
         outputStream.close();
@@ -123,6 +136,7 @@ public class ServerReader {
         while ((line = r.readLine()) != null) {
             total.append(line).append('\n');
         }
+        in.close();
 
         String data = total.toString();
         Log.d("ServerReader", data);
@@ -143,8 +157,19 @@ public class ServerReader {
             throws KeyManagementException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         HttpsURLConnection urlConnection = getUrlConnection(c, ACTIONS_URL);
         DataOutputStream outputStream = new DataOutputStream(urlConnection.getOutputStream());
-        String jsonParamsString = "{\"username\":\"Aravind\", \"password\":\"Sagar\", \"request_id\":"
-                + policyId + ", \"action\": \"" + action + "\", \"type\": \"" + policyType + "\"}";
+        String jsonParamsString = "";
+        try {
+            jsonParamsString = new JSONObject()
+                    .put("username", PreferenceHelper.getString(c, R.string.pref_key_username, ""))
+                    .put("password", PreferenceHelper.getString(c, R.string.pref_key_password, ""))
+                    .put("request_id", policyId)
+                    .put("action", action)
+                    .put("type", policyType)
+                    .toString();
+        } catch (JSONException e) {
+            // Should not happen.
+            e.printStackTrace();
+        }
         Log.d("json params", jsonParamsString);
         outputStream.writeBytes(jsonParamsString);
         outputStream.flush();
@@ -157,17 +182,19 @@ public class ServerReader {
         while ((line = r.readLine()) != null) {
             total.append(line).append('\n');
         }
+        in.close();
 
         String data = total.toString();
         Log.d("ServerReader", data);
     }
 
-    private static void parseAndStore(String data, Context context) throws JSONException {
+    private static void parseAndStore(String data, Context context) throws JSONException, ParseException {
         dMap.clear();
         dMap.put("Camera", R.drawable.ic_menu_camera);
         dMap.put("GPS", R.drawable.ic_location_on_black_24dp);
         dMap.put("temperature", R.drawable.ic_ac_unit_black_24dp);
-        AppDatabase db = Room.databaseBuilder(context, AppDatabase.class, DB_NAME).build();
+        AppDatabase db = AppDatabase.getInstance(context);
+        db.appDao().deleteAll();
         JSONObject jObject = new JSONObject(data);
 
         // Insert data sources.
@@ -223,8 +250,8 @@ public class ServerReader {
                     p.getInt("ID"),
                     p.getInt("requesterID"),
                     p.getInt("deviceSummaryID"),
-                    new Date(),
-                    new Date()
+                    DATE_FORMAT.parse(p.getString("accessStartDate")),
+                    DATE_FORMAT.parse(p.getString("accessEndDate"))
             ));
         }
 
@@ -236,8 +263,8 @@ public class ServerReader {
                     p.getInt("ID"),
                     p.getInt("requesterID"),
                     p.getInt("deviceSummaryID"),
-                    new Date(),
-                    new Date()
+                    DATE_FORMAT.parse(p.getString("accessStartDate")),
+                    DATE_FORMAT.parse(p.getString("accessEndDate"))
             ));
         }
 

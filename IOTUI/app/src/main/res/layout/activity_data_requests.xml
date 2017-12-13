@@ -13,39 +13,46 @@
             android:id="@+id/list_data_requests"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <com.github.clans.fab.FloatingActionMenu
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:menu_colorNormal="@color/colorAccent"
-            app:menu_colorPressed="@color/colorAccentDark"
-            app:menu_colorRipple="@color/colorAccentLight"
-            app:menu_icon="@drawable/ic_clear_all"
-            android:id="@+id/clear_all_menu"
-            app:menu_backgroundColor="#99FFFFFF">
-
-            <com.github.clans.fab.FloatingActionButton
-                app:fab_label="@string/accept_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_accept"
-                app:fab_colorNormal="@android:color/holo_green_dark"
-                app:fab_colorPressed="@android:color/holo_green_light"
-                app:fab_colorRipple="@android:color/holo_green_light"
-                app:fab_size="mini"/>
-            <com.github.clans.fab.FloatingActionButton
-                app:fab_label="@string/reject_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_reject"
-                app:fab_colorNormal="@android:color/holo_red_dark"
-                app:fab_colorPressed="@android:color/holo_red_light"
-                app:fab_colorRipple="@android:color/holo_red_light"
-                app:fab_size="mini"/>
-        </com.github.clans.fab.FloatingActionMenu>
     </android.support.v4.widget.SwipeRefreshLayout>
+    <TextView
+        android:id="@+id/text_no_items"
+        android:text="No pending data requests"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone" />
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/clear_all_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        app:menu_backgroundColor="#99FFFFFF"
+        app:menu_colorNormal="@color/colorAccent"
+        app:menu_colorPressed="@color/colorAccentDark"
+        app:menu_colorRipple="@color/colorAccentLight"
+        app:menu_icon="@drawable/ic_clear_all">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_accept_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_accept"
+            app:fab_colorNormal="@android:color/holo_green_dark"
+            app:fab_colorPressed="@android:color/holo_green_light"
+            app:fab_colorRipple="@android:color/holo_green_light"
+            app:fab_label="@string/accept_all"
+            app:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_reject_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_reject"
+            app:fab_colorNormal="@android:color/holo_red_dark"
+            app:fab_colorPressed="@android:color/holo_red_light"
+            app:fab_colorRipple="@android:color/holo_red_light"
+            app:fab_label="@string/reject_all"
+            app:fab_size="mini" />
+    </com.github.clans.fab.FloatingActionMenu>
 </android.support.constraint.ConstraintLayout>

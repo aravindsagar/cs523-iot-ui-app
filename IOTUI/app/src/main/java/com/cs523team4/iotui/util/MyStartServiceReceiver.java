@@ -13,12 +13,15 @@ public class MyStartServiceReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        ComponentName serviceComponent = new ComponentName(context, PeriodicSyncJobService.class);
+        scheduleJob(context);
+    }
 
+    public static void scheduleJob(Context context) {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
             return;
         }
 
+        ComponentName serviceComponent = new ComponentName(context, PeriodicSyncJobService.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent);
         builder.setPeriodic(60 * 60 * 1000); // max once an hour is sufficient.
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED); // require unmetered network

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c6c2f9d1238eecadd48b1cc7b5e11ef0",
+    "identityHash": "83c371d12423ce9db9cdfb3360b51240",
     "entities": [
       {
         "tableName": "AccessPermission",
@@ -300,7 +300,7 @@
       },
       {
         "tableName": "DataRequest",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`requestId` INTEGER NOT NULL, `dataRequesterId` INTEGER NOT NULL, `summaryId` INTEGER NOT NULL, `startDate` INTEGER, `endDate` INTEGER, PRIMARY KEY(`requestId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`requestId` INTEGER NOT NULL, `dataRequesterId` INTEGER NOT NULL, `summaryId` INTEGER NOT NULL, `startDate` INTEGER, `endDate` INTEGER, PRIMARY KEY(`requestId`), FOREIGN KEY(`dataRequesterId`) REFERENCES `DataRequester`(`dataRequesterId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`summaryId`) REFERENCES `DeviceDataSummary`(`summaryId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "requestId",
@@ -340,7 +340,30 @@
           "autoGenerate": false
         },
         "indices": [],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "DataRequester",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "dataRequesterId"
+            ],
+            "referencedColumns": [
+              "dataRequesterId"
+            ]
+          },
+          {
+            "table": "DeviceDataSummary",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "summaryId"
+            ],
+            "referencedColumns": [
+              "summaryId"
+            ]
+          }
+        ]
       },
       {
         "tableName": "TrustedAgent",
@@ -421,7 +444,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"c6c2f9d1238eecadd48b1cc7b5e11ef0\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"83c371d12423ce9db9cdfb3360b51240\")"
     ]
   }
 }

@@ -11,6 +11,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.text.ParseException;
 
 
 /**
@@ -44,7 +45,7 @@ public class ServerPullService extends IntentService {
         try {
             ServerReader.readServerData(this);
             reportResult(true);
-        } catch (JSONException | IOException | NoSuchAlgorithmException | CertificateException | KeyManagementException | KeyStoreException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             reportResult(false);
         }

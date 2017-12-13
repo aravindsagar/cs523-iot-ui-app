@@ -2,8 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentEnd="true"
     tools:context="com.cs523team4.iotui.fragment.TrustedAgentsFragment">
 
+    <ListView
+        android:id="@+id/list_trusted_agents"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
+    <TextView
+        android:id="@+id/text_no_items"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="No trusted agents found"
+        android:visibility="gone" />
 
 </FrameLayout>

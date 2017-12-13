@@ -40,15 +40,6 @@ public class DeviceDataDetails extends AppCompatActivity {
         setContentView(R.layout.activity_device_data_details);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         singleThreadExecutor.execute(loadData);
@@ -57,7 +48,7 @@ public class DeviceDataDetails extends AppCompatActivity {
     private Runnable loadData = new Runnable() {
         @Override
         public void run() {
-            final AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, AppDatabase.DB_NAME).build();
+            final AppDatabase db = AppDatabase.getInstance(getApplicationContext());
             final Device data = db.appDao().loadDevice(getIntent().getIntExtra(DEVICE_ID, 0));
             final DataRequesterSummaryDescriptionTuple[] permissions = db.appDao().loadDataRequesterSummaryDescriptionTuples(data.deviceId);
             final DataSource source = db.appDao().loadDataSource(data.dataSourceId);
@@ -109,7 +100,7 @@ public class DeviceDataDetails extends AppCompatActivity {
 
                     dataSource.setText("Stored in " + source.name);
                     dataUsage.setText("Uses " + data.diskSpaceUsage + " MB of space");
-                    dateRange.setText("From 1/1/2017");
+                    dateRange.setVisibility(View.GONE);//dateRange.setText("From 1/1/2017");
                 }
             });
         }

@@ -1,6 +1,5 @@
 package com.cs523team4.iotui;
 
-import android.app.job.JobScheduler;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -14,22 +13,34 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.cs523team4.iotui.data_access.AppDatabase;
 import com.cs523team4.iotui.fragment.MyDevicesFragment;
 import com.cs523team4.iotui.fragment.TrustedAgentsFragment;
 import com.cs523team4.iotui.intro.IntroActivity;
+import com.cs523team4.iotui.util.MyStartServiceReceiver;
 import com.cs523team4.iotui.util.PreferenceHelper;
+
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private DrawerLayout myDrawer;
 
+    private Runnable runIntro = new Runnable() {
+        @Override
+        public void run() {
+            startActivity(new Intent(MainActivity.this, IntroActivity.class));
+            finish();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MyStartServiceReceiver.scheduleJob(this);
         if (!PreferenceHelper.getBoolean(this, R.string.pref_intro_completed, false)) {
-            startActivity(new Intent(this, IntroActivity.class));
-            finish();
+            runIntro.run();
             return;
         }
         setContentView(R.layout.activity_main);
@@ -114,9 +125,13 @@ public class MainActivity extends AppCompatActivity
         if (v.getId() == R.id.logout) {
             PreferenceHelper.remove(this, R.string.pref_key_username);
             PreferenceHelper.remove(this, R.string.pref_intro_completed);
-            startActivity(new Intent(this, IntroActivity.class));
-            finish();
+            Executors.newSingleThreadExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    AppDatabase.getInstance(MainActivity.this).appDao().deleteAll();
+                    runOnUiThread(runIntro);
+                }
+            });
         }
-        JobScheduler j;
     }
 }

@@ -19,10 +19,15 @@ import com.cs523team4.iotui.data_model.pojo.AccessPermissionDeviceTuple;
 import com.cs523team4.iotui.data_model.pojo.DataRequesterSummaryDescriptionTuple;
 import com.cs523team4.iotui.data_model.pojo.DeviceNameSummaryIdTuple;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 /**
  * Created by aravind on 12/2/17.
  */
 
+@SuppressWarnings("UnusedReturnValue")
 @Dao
 public abstract class AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -104,6 +109,8 @@ public abstract class AppDao {
             + "INNER JOIN Device ON Device.deviceId = DeviceDataSummary.deviceId")
     public abstract DeviceNameSummaryIdTuple[] loadDeviceNameSummaryIdTuples();
 
+    @Query("SELECT * FROM TrustedAgent")
+    public abstract TrustedAgent[] loadAllTrustedAgents();
     /**
      * Returns all trusted agents who endorse the given data requester.
      */
@@ -117,8 +124,47 @@ public abstract class AppDao {
     @Delete
     public abstract int deleteAccessPermission(AccessPermission permission);
 
-    /*@Query("SELECT DataRequester.name, DeviceDataSummary.summaryDescription FROM DataRequest "
-            + "INNER JOIN DeviceDataSummary ON DataRequest.summaryId = DeviceDataSummary.summaryId "
-            + "INNER JOIN DataRequester ON DataRequest.dataRequesterId = DataRequester.dataRequesterId ")
-    public abstract DataRequesterSummaryDescriptionTuple[] loadDataRequesterSummaryDescriptionTuplesForRequests();*/
+    @Query("DELETE FROM DataRequester")
+    public abstract int deleteAllDataRequesters();
+
+    @Query("DELETE FROM DataSource")
+    public abstract int deleteAllDataSources();
+
+    @Query("DELETE FROM TrustedAgent")
+    public abstract int deleteAllTrustedAgents();
+
+    @Query("DELETE FROM Device")
+    public abstract int deleteAllDevices();
+
+    @Query("DELETE FROM DeviceDataSummary")
+    public abstract int deleteAllDeviceDataSummaries();
+
+    @Query("DELETE FROM AccessPermission")
+    public abstract int deleteAllAccessPermissions();
+
+    @Query("DELETE FROM DataDateRange")
+    public abstract int deleteAllDataDateRanges();
+
+    @Query("DELETE FROM DataRequest")
+    public abstract int deleteAllDataRequests();
+
+    @Query("DELETE FROM Endorsement")
+    public abstract int deleteAllEndorsements();
+
+    public int deleteAll() {
+        // Invoking all methods starting with deleteAll won't work; foreign key constraints
+        // could be violated.
+        /*int ret_val = 0;
+        Method[] methods = this.getClass().getDeclaredMethods();
+        for (Method m : methods) {
+            if (Modifier.isPublic(m.getModifiers()) && m.getName().startsWith("deleteAll")) {
+                ret_val += (int) m.invoke(this);
+            }
+        }
+        return ret_val;*/
+
+        return deleteAllEndorsements() + deleteAllDataRequests() + deleteAllDataDateRanges()
+                + deleteAllAccessPermissions() + deleteAllDeviceDataSummaries() + deleteAllDevices()
+                + deleteAllDataRequesters() + deleteAllDataSources() + deleteAllTrustedAgents();
+    }
 }

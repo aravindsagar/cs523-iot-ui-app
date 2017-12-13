@@ -1,8 +1,10 @@
 package com.cs523team4.iotui.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -24,10 +26,12 @@ import com.cs523team4.iotui.server_util.ServerReader;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -36,17 +40,22 @@ import java.util.concurrent.Executors;
  */
 
 public class DataRequestsAdapter extends BaseAdapter {
+
+    @SuppressLint("SimpleDateFormat")
+    private static final DateFormat ourDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+
     private AppDatabase myDb;
     private DataRequest[] myDataRequests;
     private SparseArray<DataRequester> myDataRequesters;
     private SparseArray<String> mySummaryDescriptions;
     private SparseArray<String> mySummaryDeviceNames;
     private SparseArray<String> myEndorsements;
+    private RefreshCompleteListener myListener;
 
     private Executor myExecutor = Executors.newSingleThreadExecutor();
     private Handler myHandler;
 
-    public DataRequestsAdapter(AppDatabase db) {
+    public DataRequestsAdapter(AppDatabase db, RefreshCompleteListener listener) {
         super();
         myDb = db;
         myDataRequests = new DataRequest[0];
@@ -55,6 +64,7 @@ public class DataRequestsAdapter extends BaseAdapter {
         mySummaryDeviceNames = new SparseArray<>();
         myEndorsements = new SparseArray<>();
         myHandler = new Handler();
+        myListener = listener;
         refresh();
     }
 
@@ -91,23 +101,30 @@ public class DataRequestsAdapter extends BaseAdapter {
                 + " from "
                 + mySummaryDeviceNames.get(request.summaryId)
         );
+        TextView dView = convertView.findViewById(R.id.text_date_range);
+        dView.setText(ourDateFormat.format(request.startDate) + " - " + ourDateFormat.format(request.endDate));
+        dView.setCompoundDrawablesWithIntrinsicBounds(getDrawable(parent, R.drawable.ic_clock), null, null, null);
         TextView eView = convertView.findViewById(R.id.text_endorsement);
         String endorsements = myEndorsements.get(requester.dataRequesterId);
         if (endorsements != null) {
             eView.setText("Endorsed by " + endorsements);
-            eView.setCompoundDrawables(parent.getContext().getResources().getDrawable(R.drawable.ic_tick), null, null, null);
+            eView.setCompoundDrawablesWithIntrinsicBounds(getDrawable(parent, R.drawable.ic_tick), null, null, null);
         } else {
             eView.setText("No endorsements");
-            eView.setCompoundDrawables(parent.getContext().getResources().getDrawable(R.drawable.ic_warning), null, null, null);
+            eView.setCompoundDrawablesWithIntrinsicBounds(getDrawable(parent, R.drawable.ic_warning), null, null, null);
         }
-        ImageView imgView = convertView.findViewById(R.id.img_requester_icon);
-        imgView.setImageResource(requester.drawableResId);
+        rView.setCompoundDrawablesWithIntrinsicBounds(getDrawable(parent, requester.drawableResId), null, null, null);
         return convertView;
+    }
+
+    private Drawable getDrawable(View view, int resId) {
+        return view.getContext().getResources().getDrawable(resId);
     }
 
     private Runnable notifyDatasetChangedRunnable = new Runnable() {
         @Override
         public void run() {
+            myListener.onRefreshComplete(myDataRequests.length > 0);
             notifyDataSetChanged();
         }
     };
@@ -142,6 +159,9 @@ public class DataRequestsAdapter extends BaseAdapter {
             for (DeviceNameSummaryIdTuple t : myDb.appDao().loadDeviceNameSummaryIdTuples()) {
                 mySummaryDeviceNames.put(t.summaryId, t.deviceName);
             }
+
+            // Dummay data for test
+            DataRequest request = new DataRequest(1, 1, 1, new Date(), new Date());
             myHandler.post(notifyDatasetChangedRunnable);
         }
     };
@@ -161,38 +181,56 @@ public class DataRequestsAdapter extends BaseAdapter {
                 .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        myExecutor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    ServerReader.postDataRequestAction(context, request, ServerReader.ACTION_ACCEPT);
-                                } catch (KeyManagementException | CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
-                                    e.printStackTrace();
-                                }
-                                myDb.appDao().deleteDataRequest(request);
-                                populateData.run();
-                            }
-                        });
+                        acceptDataRequest(context, request);
                     }
                 })
                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        myHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    ServerReader.postDataRequestAction(context, request, ServerReader.ACTION_DENY);
-                                } catch (KeyManagementException | CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
-                                    e.printStackTrace();
-                                }
-                                myDb.appDao().deleteDataRequest(request);
-                                populateData.run();
-                            }
-                        });
+                        denyDataRequest(context, request);
                     }
                 })
                 .setView(checkBoxView)
                 .show();
+    }
+
+    public void processAllDataRequests(boolean accept, Context context) {
+        for (DataRequest r : myDataRequests) {
+            if (accept) {
+                acceptDataRequest(context, r);
+            } else {
+                denyDataRequest(context, r);
+            }
+        }
+    }
+
+    private void denyDataRequest(final Context context, final DataRequest request) {
+        myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ServerReader.postDataRequestAction(context, request, ServerReader.ACTION_DENY);
+                } catch (KeyManagementException | CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+                    e.printStackTrace();
+                }
+                myDb.appDao().deleteDataRequest(request);
+                populateData.run();
+            }
+        });
+    }
+
+    private void acceptDataRequest(final Context context, final DataRequest request) {
+        myExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ServerReader.postDataRequestAction(context, request, ServerReader.ACTION_ACCEPT);
+                } catch (KeyManagementException | CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+                    e.printStackTrace();
+                }
+                myDb.appDao().deleteDataRequest(request);
+                populateData.run();
+            }
+        });
     }
 }

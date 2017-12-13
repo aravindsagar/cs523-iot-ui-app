@@ -37,7 +37,7 @@ public class MyDataListAdapter extends BaseAdapter {
         TextView sourceView;
         TextView dateView;
 
-        public ViewHolder(ImageView imageView, TextView nameView, TextView sharedStatusView,
+        ViewHolder(ImageView imageView, TextView nameView, TextView sharedStatusView,
                           TextView sourceView, TextView dateView) {
             this.imageView = imageView;
             this.nameView = nameView;
@@ -54,8 +54,9 @@ public class MyDataListAdapter extends BaseAdapter {
     private AppDatabase myDb;
     private Executor myExecutor = Executors.newSingleThreadExecutor();
     private Handler myHandler;
+    private RefreshCompleteListener myListener;
 
-    public MyDataListAdapter(final Context context, AppDatabase db) {
+    public MyDataListAdapter(final Context context, AppDatabase db, RefreshCompleteListener listener) {
         super();
         myDb = db;
         myInflater = LayoutInflater.from(context);
@@ -63,6 +64,7 @@ public class MyDataListAdapter extends BaseAdapter {
         myDataSources = new SparseArray<>(myDevices.length);
         mySharedStatuses = new SparseBooleanArray(myDevices.length);
         myHandler = new Handler();
+        myListener = listener;
         refresh();
     }
 
@@ -110,12 +112,14 @@ public class MyDataListAdapter extends BaseAdapter {
         } else {
             holder.sharedStatusView.setText(R.string.not_shared);
         }
+        holder.dateView.setVisibility(View.GONE);
         return convertView;
     }
 
     private Runnable notifyDatasetChangedRunnable = new Runnable() {
         @Override
         public void run() {
+            myListener.onRefreshComplete(myDevices.length > 0);
             notifyDataSetChanged();
         }
     };

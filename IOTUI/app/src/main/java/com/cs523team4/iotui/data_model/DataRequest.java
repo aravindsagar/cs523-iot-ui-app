@@ -1,6 +1,7 @@
 package com.cs523team4.iotui.data_model;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Date;
@@ -9,7 +10,13 @@ import java.util.Date;
  * Created by aravind on 12/3/17.
  */
 
-@Entity
+@Entity(foreignKeys = {
+        @ForeignKey(entity = DataRequester.class,
+                parentColumns = "dataRequesterId",
+                childColumns = "dataRequesterId"),
+        @ForeignKey(entity = DeviceDataSummary.class,
+                parentColumns = "summaryId",
+                childColumns = "summaryId")})
 public class DataRequest {
     @PrimaryKey
     public int requestId;
