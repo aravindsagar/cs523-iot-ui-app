@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cs523team4.iotui">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -42,24 +44,28 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".DataRequestsActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
 
         <service
             android:name=".server_util.ServerPullService"
-            android:exported="false"/>
-
+            android:exported="false" />
         <service
             android:name=".PeriodicSyncJobService"
             android:label="Periodic sync service"
-            android:permission="android.permission.BIND_JOB_SERVICE" >
-        </service>
+            android:permission="android.permission.BIND_JOB_SERVICE"></service>
 
-        <receiver android:name=".util.MyStartServiceReceiver" >
+        <receiver android:name=".util.MyStartServiceReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
+        <activity android:name=".GetOwnerKeyActivity">
+            <intent-filter>
+                <action android:name="com.cs523team4.iotui.action.GET_OWNER_PUBLIC_KEY"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

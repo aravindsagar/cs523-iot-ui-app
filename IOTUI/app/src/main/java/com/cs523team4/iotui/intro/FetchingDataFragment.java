@@ -26,7 +26,7 @@ import static com.cs523team4.iotui.server_util.ServerPullService.BROADCAST_ACTIO
 import static com.cs523team4.iotui.server_util.ServerPullService.DATA_REFRESH_RESULT;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass, which fetches data from the server during initialization.
  */
 public class FetchingDataFragment extends Fragment implements ISlidePolicy {
 

@@ -22,6 +22,10 @@ import com.cs523team4.iotui.util.PreferenceHelper;
 
 import java.util.concurrent.Executors;
 
+/**
+ * The main activity of the app. By default, it loads the 'MyDevicesFragment'. Users can also
+ * switch to the 'TrustedAgents' fragment by using the navigation drawer.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 

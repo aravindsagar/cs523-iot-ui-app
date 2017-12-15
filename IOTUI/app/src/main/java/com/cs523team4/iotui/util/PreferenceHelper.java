@@ -4,6 +4,7 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 
 /**
+ * Helper class to easily get/set shared preferences.
  * Created by aravind on 12/3/17.
  */
 

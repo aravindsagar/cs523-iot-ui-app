@@ -35,7 +35,8 @@ import static com.cs523team4.iotui.server_util.ServerPullService.BROADCAST_ACTIO
 import static com.cs523team4.iotui.server_util.ServerPullService.DATA_REFRESH_RESULT;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass for showing user's devices. This is the default fragment
+ * populated in the main activity.
  */
 public class MyDevicesFragment extends Fragment implements
         AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, RefreshCompleteListener {

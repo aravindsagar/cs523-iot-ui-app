@@ -184,5 +184,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="notifications">Notifications</string>
     <string name="logout">Logout</string>
+    <string name="no">no</string>
+    <string name="yes">yes</string>
 
 </resources>

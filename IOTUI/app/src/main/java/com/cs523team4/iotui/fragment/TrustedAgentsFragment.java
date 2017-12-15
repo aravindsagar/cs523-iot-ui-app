@@ -18,7 +18,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass. This fragment lists Trusted agents.
  */
 public class TrustedAgentsFragment extends Fragment {
 

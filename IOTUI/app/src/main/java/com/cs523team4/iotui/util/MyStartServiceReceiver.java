@@ -9,6 +9,9 @@ import android.content.Intent;
 
 import com.cs523team4.iotui.PeriodicSyncJobService;
 
+/**
+ * A class which starts our periodic sync when Android system boots up.
+ */
 public class MyStartServiceReceiver extends BroadcastReceiver {
 
     @Override

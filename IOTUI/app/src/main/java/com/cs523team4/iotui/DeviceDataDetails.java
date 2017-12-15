@@ -29,6 +29,9 @@ import java.security.cert.CertificateException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ * Activity which shows users details of a particular device.
+ */
 public class DeviceDataDetails extends AppCompatActivity {
 
     public static String DEVICE_ID = "device_id";

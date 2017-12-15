@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
+ * Data access object containing data access methods to access, update and delete from our db.
+ *
  * Created by aravind on 12/2/17.
  */
 

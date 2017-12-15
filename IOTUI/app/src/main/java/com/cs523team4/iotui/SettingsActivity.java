@@ -15,8 +15,12 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
+/**
+ * Settings activity. Currently contains dummy settings.
+ */
 public class SettingsActivity extends AppCompatPreferenceActivity {
     private static final String TAG = SettingsActivity.class.getSimpleName();
 
@@ -27,7 +31,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         // load settings fragment
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
+
+        // Test fetching public key
+//        Intent ti = new Intent().setAction("com.cs523team4.iotui.action.GET_OWNER_PUBLIC_KEY");
+//        startActivityForResult(ti.putExtra(GetOwnerKeyActivity.EXTRA_REQUESTER_NAME, "Self"), 1);
     }
+
+    /*@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            Log.d("SettingsActivity", ""+resultCode);
+            if (data != null) {
+                Log.d("SettingsActivity", data.getStringExtra(GetOwnerKeyActivity.EXTRA_OWNER_PUBLIC_KEY));
+            }
+        }
+    }*/
 
     public static class MainPreferenceFragment extends PreferenceFragment {
         @Override

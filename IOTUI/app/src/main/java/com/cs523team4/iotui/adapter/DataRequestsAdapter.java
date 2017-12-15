@@ -36,6 +36,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
+ * Adapter for populating the data requests list. User can click on any entry to accept/deny the request.
  * Created by aravind on 12/3/17.
  */
 

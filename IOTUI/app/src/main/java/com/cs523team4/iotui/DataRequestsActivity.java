@@ -27,6 +27,9 @@ import static com.cs523team4.iotui.server_util.ServerPullService.ACTION_REFRESH_
 import static com.cs523team4.iotui.server_util.ServerPullService.BROADCAST_ACTION;
 import static com.cs523team4.iotui.server_util.ServerPullService.DATA_REFRESH_RESULT;
 
+/**
+ * Activity which shows users the pending data access requests.
+ */
 public class DataRequestsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, RefreshCompleteListener, View.OnClickListener {
 
     private FloatingActionMenu myFam;

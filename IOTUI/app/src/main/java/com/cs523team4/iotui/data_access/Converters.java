@@ -5,6 +5,7 @@ import android.arch.persistence.room.TypeConverter;
 import java.util.Date;
 
 /**
+ * Converters required for Room database.
  * Created by aravind on 12/2/17.
  */
 

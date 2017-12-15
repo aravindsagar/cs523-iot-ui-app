@@ -68,6 +68,7 @@ public class ServerReader {
 
     private static final String NOTIFY_URL = "https://35.167.25.135/notify";
     private static final String ACTIONS_URL = "https://35.167.25.135/actions";
+    private static final String PUBLIC_KEY_URL = "https://35.167.25.135/pk";
 
     @SuppressLint("SimpleDateFormat")
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("m/d/y");
@@ -186,6 +187,36 @@ public class ServerReader {
 
         String data = total.toString();
         Log.d("ServerReader", data);
+    }
+
+    public static String fetchPublicKey(Context c) throws KeyManagementException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        HttpsURLConnection urlConnection = getUrlConnection(c, PUBLIC_KEY_URL);
+        DataOutputStream outputStream = new DataOutputStream(urlConnection.getOutputStream());
+        String jsonParamsString = "";
+        try {
+            jsonParamsString = new JSONObject()
+                    .put("username", PreferenceHelper.getString(c, R.string.pref_key_username, ""))
+                    .put("password", PreferenceHelper.getString(c, R.string.pref_key_password, ""))
+                    .toString();
+        } catch (JSONException e) {
+            // Should not happen.
+            e.printStackTrace();
+        }
+        Log.d("json params", jsonParamsString);
+        outputStream.writeBytes(jsonParamsString);
+        outputStream.flush();
+        outputStream.close();
+
+        InputStream in = urlConnection.getInputStream();
+        BufferedReader r = new BufferedReader(new InputStreamReader(in));
+        StringBuilder total = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) {
+            total.append(line).append('\n');
+        }
+        in.close();
+
+        return total.toString();
     }
 
     private static void parseAndStore(String data, Context context) throws JSONException, ParseException {

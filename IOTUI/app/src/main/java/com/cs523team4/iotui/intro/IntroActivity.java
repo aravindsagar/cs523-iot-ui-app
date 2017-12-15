@@ -14,6 +14,8 @@ import com.github.paolorotolo.appintro.AppIntro2Fragment;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 
 /**
+ * This activity is invoked when user launches the app for the first time.
+ *
  * Created by aravind on 12/3/17.
  */
 
